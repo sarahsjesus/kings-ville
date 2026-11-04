@@ -1,5 +1,33 @@
-.node_modules/
-
+node_modules/
 .next/
+/out/
+/build/
+/dist/
 
+# Local environment variables and secrets
+.env*
+!.env.example
+!.env.*.example
+
+# Deployment
+.vercel/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# TypeScript and tooling caches
+*.tsbuildinfo
+.turbo/
+.cache/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Local editor settings
+.idea/
 
