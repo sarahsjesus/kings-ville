@@ -25,24 +25,34 @@ export default function StartScreen() {
   const [panel, setPanel] = useState<Panel>(null);
   const [hasSave, setHasSave] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
-  const [audioBlocked, setAudioBlocked] = useState(false);
+  const [musicVolume, setMusicVolume] = useState(70);
   const ambientAudioRef = useRef<HTMLAudioElement>(null);
   const diving = phase === 'loading';
 
   const startAmbientAudio = useCallback(() => {
     const audio = ambientAudioRef.current;
-    if (!audio || !audio.paused) return;
+    if (!audio || !audio.paused || audio.volume === 0) return;
 
-    void audio.play().then(() => {
-      setAudioBlocked(false);
-    }).catch((error: unknown) => {
-      if (error instanceof DOMException && error.name === 'NotAllowedError') {
-        setAudioBlocked(true);
-        return;
+    void audio.play().catch((error: unknown) => {
+      if (error instanceof DOMException) {
+        if (error.name === 'AbortError') return;
+        if (error.name === 'NotAllowedError') return;
       }
       console.error('Não foi possível reproduzir o áudio ambiente da tela inicial.', error);
     });
   }, []);
+
+  const changeMusicVolume = (value: number) => {
+    setMusicVolume(value);
+    const audio = ambientAudioRef.current;
+    if (!audio) return;
+    audio.volume = value / 100;
+    if (value === 0) {
+      audio.pause();
+    } else {
+      startAmbientAudio();
+    }
+  };
 
   // Parallax suavizado pelo mouse
   const mx = useMotionValue(0);
@@ -73,10 +83,11 @@ export default function StartScreen() {
   useEffect(() => {
     const audio = ambientAudioRef.current;
     if (!audio) return;
-    audio.volume = 0.3;
-    startAmbientAudio();
-    return () => audio.pause();
-  }, [startAmbientAudio]);
+    audio.volume = musicVolume / 100;
+    if (musicVolume > 0) startAmbientAudio();
+  }, [musicVolume, startAmbientAudio]);
+
+  useEffect(() => () => ambientAudioRef.current?.pause(), []);
 
   useEffect(() => {
     if (!diving) return;
@@ -154,11 +165,6 @@ export default function StartScreen() {
         transition={{ duration: 0.6 }}
       >
         <nav className="flex flex-wrap items-center justify-center gap-3" aria-label="Menu principal">
-          {audioBlocked && (
-            <button type="button" className="kv-btn kv-btn-sm" onClick={startAmbientAudio}>
-              Ativar som ambiente
-            </button>
-          )}
           {items.map((it, i) => (
             <motion.button
               key={it.label}
@@ -188,12 +194,23 @@ export default function StartScreen() {
               {panel === 'options' ? (
                 <>
                   <h2 className="mb-4 text-center text-2xl font-bold">Opções</h2>
-                  {['Música', 'Efeitos sonoros'].map((l) => (
-                    <label key={l} className="mb-3 block text-sm font-semibold">{l}
-                      <input type="range" defaultValue={70} className="mt-1 w-full accent-amber-700" />
-                    </label>
-                  ))}
-                  <p className="text-xs opacity-70">Os controles de áudio serão ligados em uma próxima etapa.</p>
+                  <label className="mb-3 block text-sm font-semibold">
+                    Música <span className="float-right">{musicVolume}%</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={musicVolume}
+                      aria-label="Volume da música"
+                      onChange={(event) => changeMusicVolume(Number(event.currentTarget.value))}
+                      className="mt-1 w-full accent-amber-700"
+                    />
+                  </label>
+                  <label className="mb-3 block text-sm font-semibold opacity-60">
+                    Efeitos sonoros
+                    <input type="range" min="0" max="100" value="70" disabled className="mt-1 w-full accent-amber-700" />
+                  </label>
+                  <p className="text-xs opacity-70">Arraste para a esquerda para diminuir ou silenciar a música.</p>
                 </>
               ) : (
                 <>
