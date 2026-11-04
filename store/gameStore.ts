@@ -17,23 +17,32 @@ const readSave = (): string | null => {
 
 const START = {
   resources: { gold: 100, food: 60, wood: 80, stone: 40 } as Record<ResourceKey, number>,
-  population: { total: 2, capacity: 8, farmers: 0, miners: 0, builders: 0 },
+  population: { total: 2, capacity: 8, farmers: 0, miners: 0, builders: 0, warriors: 0 },
   kingdomLevel: 0,
   owned: { house: 2 } as Record<string, number>,
   soldiers: 0,
   armyLevel: 0,
 };
 
+type PopulationRole = 'farmers' | 'miners' | 'builders' | 'warriors';
+const ROLE_POPULATION_KEY: Record<Role, PopulationRole> = {
+  farmer: 'farmers',
+  miner: 'miners',
+  builder: 'builders',
+  warrior: 'warriors',
+};
+
 const TRAVELERS = [
   { name: 'Aldric, o Andarilho', pitch: 'Perdi minha terra para a seca. Aceita um par de mãos fortes, Majestade?', preferred: 'farmer' as Role },
   { name: 'Brunna das Minas', pitch: 'Conheço veios de ferro e ouro que ninguém mais viu. Dê-me uma picareta.', preferred: 'miner' as Role },
   { name: 'Tobias, Mestre de Obras', pitch: 'Já ergui três capelas. Com bons braços, levanto uma capital.', preferred: 'builder' as Role },
+  { name: 'Sir Roland, o Guardião', pitch: 'Minha espada está a serviço de quem proteger seu povo. Deixe-me defender a vila.', preferred: 'warrior' as Role },
 ];
 
 interface GameState {
   phase: Phase;
   resources: Record<ResourceKey, number>;
-  population: { total: number; capacity: number; farmers: number; miners: number; builders: number };
+  population: { total: number; capacity: number; farmers: number; miners: number; builders: number; warriors: number };
   kingdomLevel: number;
   owned: Record<string, number>;
   soldiers: number;
@@ -63,6 +72,7 @@ interface GameState {
   dismissTraveler: (id: string) => void;
   idle: () => number;
   builderSpeed: () => number; // multiplicador para construções (Etapa 2)
+  villageSecurity: () => number;
 
   openShop: (open: boolean, tab?: ShopTab) => void;
   openPeople: (open: boolean) => void;
@@ -126,7 +136,11 @@ export const useGameStore = create<GameState>((set, get) => ({
       const saved = JSON.parse(raw);
       set({
         ...saved,
-        population: { ...saved.population, capacity: (saved.owned.house ?? 0) * 4 },
+        population: {
+          ...saved.population,
+          capacity: (saved.owned.house ?? 0) * 4,
+          warriors: saved.population.warriors ?? 0,
+        },
         soldiers: saved.soldiers ?? 0,
         armyLevel: saved.armyLevel ?? 0,
         buffs: {},
@@ -209,7 +223,7 @@ export const useGameStore = create<GameState>((set, get) => ({
   recruit: (id, role) => {
     const s = get();
     if (s.population.total >= s.population.capacity) return false;
-    const key = (role + 's') as 'farmers' | 'miners' | 'builders';
+    const key = ROLE_POPULATION_KEY[role];
     set({
       population: { ...s.population, total: s.population.total + 1, [key]: s.population[key] + 1 },
       travelers: s.travelers.filter((t) => t.id !== id),
@@ -220,20 +234,25 @@ export const useGameStore = create<GameState>((set, get) => ({
   dismissTraveler: (id) => set((s) => ({ travelers: s.travelers.filter((t) => t.id !== id), activeTravelerId: null })),
   idle: () => {
     const p = get().population;
-    return p.total - p.farmers - p.miners - p.builders;
+    return p.total - p.farmers - p.miners - p.builders - p.warriors;
   },
   builderSpeed: () => 1 + 0.15 * get().population.builders,
+  villageSecurity: () => {
+    const { warriors } = get().population;
+    const { soldiers, armyLevel } = get();
+    return warriors + soldiers * (1 + armyLevel * 0.5);
+  },
 
   openShop: (open, tab) => set((s) => ({ shopOpen: open, shopTab: tab ?? s.shopTab })),
   openPeople: (open) => set({ peopleOpen: open }),
   assign: (role) => {
     if (get().idle() <= 0) return false;
-    const key = (role + 's') as 'farmers' | 'miners' | 'builders';
+    const key = ROLE_POPULATION_KEY[role];
     set((s) => ({ population: { ...s.population, [key]: s.population[key] + 1 } }));
     return true;
   },
   unassign: (role) => {
-    const key = (role + 's') as 'farmers' | 'miners' | 'builders';
+    const key = ROLE_POPULATION_KEY[role];
     set((s) => (s.population[key] > 0 ? { population: { ...s.population, [key]: s.population[key] - 1 } } : s));
   },
   rates: () => computeRates(get()),

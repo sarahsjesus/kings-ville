@@ -8,8 +8,9 @@ const ROLES: { id: Role; label: string; hint: string }[] = [
   { id: 'farmer', label: 'Fazendeiro', hint: 'Gera comida' },
   { id: 'miner', label: 'Minerador', hint: 'Gera ouro e pedra' },
   { id: 'builder', label: 'Construtor', hint: 'Acelera obras e traz madeira' },
+  { id: 'warrior', label: 'Guerreiro', hint: 'Aumenta a segurança da vila' },
 ];
-const ROLE_NAME: Record<Role, string> = { farmer: 'fazendeiro', miner: 'minerador', builder: 'construtor' };
+const ROLE_NAME: Record<Role, string> = { farmer: 'fazendeiro', miner: 'minerador', builder: 'construtor', warrior: 'guerreiro' };
 
 export default function TravelerDialog() {
   const travelers = useGameStore((s) => s.travelers);

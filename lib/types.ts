@@ -1,5 +1,5 @@
 export type ResourceKey = 'gold' | 'food' | 'wood' | 'stone';
-export type Role = 'farmer' | 'miner' | 'builder';
+export type Role = 'farmer' | 'miner' | 'builder' | 'warrior';
 export type Cost = Partial<Record<ResourceKey, number>>;
 export type ShopTab = 'buildings' | 'upgrades' | 'buffs';
 

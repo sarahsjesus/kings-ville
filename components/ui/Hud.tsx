@@ -9,6 +9,7 @@ export default function Hud() {
   const res = useGameStore((s) => s.resources);
   const pop = useGameStore((s) => s.population);
   const level = useGameStore((s) => s.kingdomLevel);
+  const security = useGameStore((s) => s.villageSecurity());
   const waiting = useGameStore((s) => s.travelers.length);
   const tick = useGameStore((s) => s.tick);
   const spawn = useGameStore((s) => s.spawnTraveler);
@@ -68,7 +69,8 @@ export default function Hud() {
       </header>
       <div className="kv-panel pointer-events-none absolute left-2 top-2 z-10 hidden px-3 py-2 text-xs font-bold sm:left-3 sm:top-3 md:block">
         <p>{LEVEL_NAMES[level]}</p>
-        <p className="mt-1 font-normal">Fazendeiros {pop.farmers} · Mineradores {pop.miners} · Construtores {pop.builders}</p>
+        <p className="mt-1 font-normal">Fazendeiros {pop.farmers} · Mineradores {pop.miners} · Construtores {pop.builders} · Guerreiros {pop.warriors}</p>
+        <p className="mt-1 font-normal">🛡️ Segurança {security.toFixed(1).replace('.', ',')}</p>
       </div>
       {waiting > 0 && (
         <p className="kv-panel pointer-events-none absolute bottom-3 left-3 z-10 px-3 py-2 text-sm font-bold">

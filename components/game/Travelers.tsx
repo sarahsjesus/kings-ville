@@ -7,7 +7,12 @@ import { ENTRANCE, GATE_ANGLE, WAIT_SPOT } from '@/lib/layout';
 import { VILLAGE, heightAt } from '@/lib/terrain';
 import type { Traveler } from '@/lib/types';
 
-const CLOAK = { farmer: '#5f8a3a', miner: '#6b6f78', builder: '#9a6a3a' };
+const CLOAK: Record<Traveler['preferred'], string> = {
+  farmer: '#5f8a3a',
+  miner: '#6b6f78',
+  builder: '#9a6a3a',
+  warrior: '#8f342b',
+};
 
 function Wanderer({ t, index }: { t: Traveler; index: number }) {
   const g = useRef<THREE.Group>(null);

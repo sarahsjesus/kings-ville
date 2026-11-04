@@ -5,10 +5,11 @@ import { ARMY_UNLOCK_LEVEL, MAX_ARMY_LEVEL, MAX_SOLDIERS, SOLDIERS_PER_TRAINING,
 import { LEVEL_NAMES, RES_ICON } from '@/lib/shopCatalog';
 import type { ResourceKey, Role } from '@/lib/types';
 
-const ROLES: { id: Role; key: 'farmers' | 'miners' | 'builders'; label: string; icon: string; desc: string }[] = [
+const ROLES: { id: Role; key: 'farmers' | 'miners' | 'builders' | 'warriors'; label: string; icon: string; desc: string }[] = [
   { id: 'farmer', key: 'farmers', label: 'Fazendeiros', icon: '🌾', desc: '+0,8 comida/s cada' },
   { id: 'miner', key: 'miners', label: 'Mineradores', icon: '⛏️', desc: '+0,5 ouro e +0,4 pedra/s cada' },
   { id: 'builder', key: 'builders', label: 'Construtores', icon: '🔨', desc: '+0,25 madeira/s e obras 15% mais rápidas' },
+  { id: 'warrior', key: 'warriors', label: 'Guerreiros', icon: '⚔️', desc: 'Aumentam a segurança da vila' },
 ];
 const fmt = (n: number) => `${n >= 0 ? '+' : ''}${n.toFixed(2).replace('.', ',')}`;
 
@@ -132,6 +133,7 @@ export default function PeoplePanel() {
                 {keys.map((k) => (
                   <span key={k} className={rates[k] < 0 ? 'text-red-800' : ''}>{RES_ICON[k]} {fmt(rates[k])}</span>
                 ))}
+                <span title="Segurança: guerreiros designados + força dos soldados treinados">🛡️ {fmt(s.villageSecurity())} segurança</span>
               </p>
               {rates.food < 0 && <p className="mt-1 text-sm font-bold text-red-800">O povo está consumindo mais comida do que produz. Coloque mais fazendeiros.</p>}
               {idle > 0 && <p className="mt-1 text-sm">Habitantes sem função não produzem nada. Use o botão + para dar um ofício a eles.</p>}
