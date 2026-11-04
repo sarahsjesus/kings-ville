@@ -3,8 +3,8 @@ import { useMemo } from 'react';
 import * as THREE from 'three';
 import { riverX, SIZE, WATER_Y, heightAt } from '@/lib/terrain';
 
-const GRASS_A = new THREE.Color('#4f8a2f');
-const GRASS_B = new THREE.Color('#7ea642');
+const GRASS_A = new THREE.Color('#568044');
+const GRASS_B = new THREE.Color('#91ae67');
 const ROCK = new THREE.Color('#8a8a7a');
 const BANK = new THREE.Color('#a89a62');
 const BED = new THREE.Color('#8a7a55');
@@ -30,7 +30,7 @@ export default function Terrain() {
         const detail = Math.sin(x * 0.63 + z * 0.37) * Math.cos(z * 0.54 - x * 0.22);
         const n = THREE.MathUtils.clamp(0.48 + broad * 0.2 + detail * 0.08, 0, 1);
         c.copy(GRASS_A).lerp(GRASS_B, n);
-        if (y > 3.5) c.lerp(ROCK, Math.min(1, (y - 3.5) / 3));
+        if (y > 5.5) c.lerp(ROCK, Math.min(1, (y - 5.5) / 3));
         if (y > 12) c.lerp(SNOW, Math.min(1, (y - 12) / 3));
       }
       col.set([c.r, c.g, c.b], i * 3);

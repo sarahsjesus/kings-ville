@@ -14,29 +14,48 @@ const blocked = (x: number, z: number) =>
   distToSeg(x, z, ENTRANCE, [GATE.x, GATE.z]) < 3.4;
 
 function Road() {
-  const segs = useMemo(() => {
-    const N = 40;
-    const [ex, ez] = ENTRANCE;
-    return Array.from({ length: N }, (_, i) => {
-      const x0 = ex + ((GATE.x - ex) * i) / N, z0 = ez + ((GATE.z - ez) * i) / N;
-      const x1 = ex + ((GATE.x - ex) * (i + 1)) / N, z1 = ez + ((GATE.z - ez) * (i + 1)) / N;
-      return {
-        x: (x0 + x1) / 2, z: (z0 + z1) / 2,
-        y: Math.max(heightAt(x0, z0), heightAt(x1, z1)) + 0.05,
-        len: Math.hypot(x1 - x0, z1 - z0) + 0.3,
-        rot: Math.atan2(x1 - x0, z1 - z0),
-      };
-    });
+  const geometry = useMemo(() => {
+    const points = [
+      new THREE.Vector3(ENTRANCE[0], 0, ENTRANCE[1]),
+      new THREE.Vector3(GATE.x, 0, GATE.z),
+      new THREE.Vector3(-20, 0, 7),
+      new THREE.Vector3(-16.5, 0, 3),
+    ];
+    const curve = new THREE.CatmullRomCurve3(points, false, 'centripetal');
+    const samples = 180;
+    const halfWidth = 1.2;
+    const positions = new Float32Array((samples + 1) * 2 * 3);
+    const indices: number[] = [];
+
+    for (let i = 0; i <= samples; i++) {
+      const t = i / samples;
+      const point = curve.getPointAt(t);
+      const tangent = curve.getTangentAt(t);
+      const sideX = tangent.z;
+      const sideZ = -tangent.x;
+      const groundY = heightAt(point.x, point.z) + 0.07;
+      const offset = i * 6;
+      positions.set([
+        point.x + sideX * halfWidth, groundY, point.z + sideZ * halfWidth,
+        point.x - sideX * halfWidth, groundY, point.z - sideZ * halfWidth,
+      ], offset);
+      if (i < samples) {
+        const vertex = i * 2;
+        indices.push(vertex, vertex + 1, vertex + 2, vertex + 1, vertex + 3, vertex + 2);
+      }
+    }
+
+    const road = new THREE.BufferGeometry();
+    road.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    road.setIndex(indices);
+    road.computeVertexNormals();
+    return road;
   }, []);
+
   return (
-    <group>
-      {segs.map((s, i) => (
-        <mesh key={i} position={[s.x, s.y, s.z]} rotation={[0, s.rot, 0]} receiveShadow>
-          <boxGeometry args={[2.2, 0.1, s.len]} />
-          <meshStandardMaterial color="#9b7d52" roughness={1} />
-        </mesh>
-      ))}
-    </group>
+    <mesh geometry={geometry} receiveShadow>
+      <meshStandardMaterial color="#95856b" roughness={1} side={THREE.DoubleSide} />
+    </mesh>
   );
 }
 

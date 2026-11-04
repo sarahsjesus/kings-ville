@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { getDayFactor, getSolarPhase } from '@/lib/dayNight';
 
 const NIGHT = new THREE.Color('#0a1030');
-const DAY = new THREE.Color('#9fd0f2');
+const DAY = new THREE.Color('#9ddcf0');
 const DUSK = new THREE.Color('#f2a063');
 const SUN_WHITE = new THREE.Color('#fff1d0');
 const SUN_LOW = new THREE.Color('#ff9a4d');
@@ -33,19 +33,19 @@ export default function DayNight() {
 
     if (sun.current) {
       sun.current.position.set(Math.cos(p) * 70, Math.max(elev, 0.05) * 7 + 6, 34);
-      sun.current.intensity = 2.6 * dayF + 0.04;
+      sun.current.intensity = 2.25 * dayF + 0.06;
       sun.current.color.copy(SUN_WHITE).lerp(SUN_LOW, duskF);
     }
-    if (hemi.current) hemi.current.intensity = 0.25 + 0.7 * dayF;
+    if (hemi.current) hemi.current.intensity = 0.85 + 0.75 * dayF;
   });
 
   return (
     <>
-      <hemisphereLight ref={hemi} args={['#bcd6ff', '#4a3b25', 0.9]} />
+      <hemisphereLight ref={hemi} args={['#d8eeff', '#60704a', 1.6]} />
       <directionalLight
         ref={sun}
         castShadow
-        intensity={2.6}
+        intensity={2.25}
         shadow-mapSize={[2048, 2048]}
         shadow-camera-left={-58}
         shadow-camera-right={58}
@@ -54,6 +54,7 @@ export default function DayNight() {
         shadow-camera-near={1}
         shadow-camera-far={230}
         shadow-bias={-0.0004}
+        shadow-normalBias={0.035}
       />
     </>
   );

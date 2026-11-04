@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-export const DAY_SECONDS = 150;
-const DAY_FRACTION = 0.7;
+export const DAY_SECONDS = 240;
+const DAY_FRACTION = 0.75;
 
 export function getSolarPhase(elapsedTime: number): number {
   const cycle = (elapsedTime / DAY_SECONDS + (DAY_FRACTION * 0.9) / Math.PI) % 1;

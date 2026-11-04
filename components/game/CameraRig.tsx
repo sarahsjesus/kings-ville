@@ -19,18 +19,18 @@ export default function CameraRig() {
 
   return (
     <>
-      <PerspectiveCamera makeDefault position={[14, 24, 30]} fov={32} near={0.5} far={600} />
+      <PerspectiveCamera makeDefault position={[8, 34, 32]} fov={35} near={0.5} far={600} />
       <OrbitControls
         ref={ref}
         makeDefault
-        target={[-8, 0, 2]}
+        target={[-10, 0, 2]}
         enableDamping
         dampingFactor={0.08}
         screenSpacePanning={false}
         minDistance={14}
-        maxDistance={100}
-        minPolarAngle={0.5}
-        maxPolarAngle={1.1}
+        maxDistance={80}
+        minPolarAngle={0.42}
+        maxPolarAngle={1.05}
         rotateSpeed={0.6}
         panSpeed={0.9}
         mouseButtons={{ LEFT: THREE.MOUSE.PAN, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.ROTATE }}
