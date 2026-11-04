@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { useGameStore } from '@/store/gameStore';
 import { ENTRANCE, GATE_ANGLE, WAIT_SPOT } from '@/lib/layout';
 import { VILLAGE, heightAt } from '@/lib/terrain';
+import { POINTER_CURSOR, SELECT_CURSOR } from '@/lib/cursor';
 import type { Traveler } from '@/lib/types';
 
 const CLOAK: Record<Traveler['preferred'], string> = {
@@ -48,8 +49,8 @@ function Wanderer({ t, index }: { t: Traveler; index: number }) {
       ref={g}
       position={[ENTRANCE[0], 0, ENTRANCE[1]]}
       onClick={(e) => { e.stopPropagation(); openTraveler(t.id); }}
-      onPointerOver={() => (document.body.style.cursor = 'pointer')}
-      onPointerOut={() => (document.body.style.cursor = 'auto')}
+      onPointerOver={() => (document.body.style.cursor = POINTER_CURSOR)}
+      onPointerOut={() => (document.body.style.cursor = SELECT_CURSOR)}
     >
       <mesh position={[0, 0.65, 0]} castShadow>
         <coneGeometry args={[0.42, 1.3, 8]} />

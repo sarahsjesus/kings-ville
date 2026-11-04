@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useGameStore } from '@/store/gameStore';
 
@@ -25,7 +25,24 @@ export default function StartScreen() {
   const [panel, setPanel] = useState<Panel>(null);
   const [hasSave, setHasSave] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
+  const [audioBlocked, setAudioBlocked] = useState(false);
+  const ambientAudioRef = useRef<HTMLAudioElement>(null);
   const diving = phase === 'loading';
+
+  const startAmbientAudio = useCallback(() => {
+    const audio = ambientAudioRef.current;
+    if (!audio || !audio.paused) return;
+
+    void audio.play().then(() => {
+      setAudioBlocked(false);
+    }).catch((error: unknown) => {
+      if (error instanceof DOMException && error.name === 'NotAllowedError') {
+        setAudioBlocked(true);
+        return;
+      }
+      console.error('Não foi possível reproduzir o áudio ambiente da tela inicial.', error);
+    });
+  }, []);
 
   // Parallax suavizado pelo mouse
   const mx = useMotionValue(0);
@@ -54,6 +71,14 @@ export default function StartScreen() {
   }, []);
 
   useEffect(() => {
+    const audio = ambientAudioRef.current;
+    if (!audio) return;
+    audio.volume = 0.3;
+    startAmbientAudio();
+    return () => audio.pause();
+  }, [startAmbientAudio]);
+
+  useEffect(() => {
     if (!diving) return;
     const t = setTimeout(() => setPhase('playing'), 2300);
     return () => clearTimeout(t);
@@ -71,11 +96,13 @@ export default function StartScreen() {
       className="fixed inset-0 z-50 overflow-hidden bg-black"
       exit={{ opacity: 0 }}
       transition={{ duration: 0.9 }}
+      onPointerDownCapture={startAmbientAudio}
       onMouseMove={(e) => {
         mx.set(e.clientX / window.innerWidth - 0.5);
         my.set(e.clientY / window.innerHeight - 0.5);
       }}
     >
+      <audio ref={ambientAudioRef} src="/musica_capa.mpeg" loop preload="auto" />
       {/* Tudo que dá zoom no mergulho */}
       <motion.div
         className="absolute inset-0"
@@ -127,6 +154,11 @@ export default function StartScreen() {
         transition={{ duration: 0.6 }}
       >
         <nav className="flex flex-wrap items-center justify-center gap-3" aria-label="Menu principal">
+          {audioBlocked && (
+            <button type="button" className="kv-btn kv-btn-sm" onClick={startAmbientAudio}>
+              Ativar som ambiente
+            </button>
+          )}
           {items.map((it, i) => (
             <motion.button
               key={it.label}

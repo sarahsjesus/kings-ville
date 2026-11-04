@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { VILLAGE, heightAt } from '@/lib/terrain';
 import { getDayFactor } from '@/lib/dayNight';
 import { GATE_ANGLE, WALL_R } from '@/lib/layout';
+import { POINTER_CURSOR, SELECT_CURSOR } from '@/lib/cursor';
 import { useGameStore } from '@/store/gameStore';
 
 const WOOD = '#55351f', PLASTER = '#d9c49a', THATCH = '#c9a44a', TILE = '#7b3a22', STONE = '#8b8b86';
@@ -216,8 +217,8 @@ function RoyalHall({ x, z }: { x: number; z: number }) {
     <group
       position={[x, heightAt(x, z), z]}
       onClick={(e) => { e.stopPropagation(); openShop(true); }}
-      onPointerOver={() => (document.body.style.cursor = 'pointer')}
-      onPointerOut={() => (document.body.style.cursor = 'auto')}
+      onPointerOver={() => (document.body.style.cursor = POINTER_CURSOR)}
+      onPointerOut={() => (document.body.style.cursor = SELECT_CURSOR)}
     >
       <mesh position={[0, 0.5, 0]} castShadow receiveShadow>
         <boxGeometry args={[4.6, 1, 3.6]} />
