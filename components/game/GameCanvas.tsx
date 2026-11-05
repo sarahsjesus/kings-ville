@@ -10,6 +10,7 @@ import Village from './Village';
 import Built from './Built';
 import Travelers from './Travelers';
 import TrainingGround from './TrainingGround';
+import Workers from './Workers';
 
 // O <Canvas> já observa o tamanho do pai (100vw x 100vh) e redimensiona renderer/câmera sozinho.
 export default function GameCanvas() {
@@ -24,6 +25,7 @@ export default function GameCanvas() {
           <Village />
           <Built />
           <TrainingGround />
+          <Workers />
           <Travelers />
         </Suspense>
       </Canvas>

@@ -11,6 +11,7 @@ const GAME_MUSIC = [
 ];
 const CROSSFADE_SECONDS = 3;
 const CROSSFADE_MS = CROSSFADE_SECONDS * 1000;
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
 
 type AudioGains = { intro: number; tracks: [number, number] };
 
@@ -25,10 +26,10 @@ export default function AmbientAudio() {
 
   useEffect(() => {
     volumeRef.current = musicVolume;
-    const masterVolume = musicVolume / 100;
-    if (introRef.current) introRef.current.volume = gainsRef.current.intro * masterVolume;
-    if (firstTrackRef.current) firstTrackRef.current.volume = gainsRef.current.tracks[0] * masterVolume;
-    if (secondTrackRef.current) secondTrackRef.current.volume = gainsRef.current.tracks[1] * masterVolume;
+    const masterVolume = clamp(musicVolume, 0, 100) / 100;
+    if (introRef.current) introRef.current.volume = clamp(gainsRef.current.intro, 0, 1) * masterVolume;
+    if (firstTrackRef.current) firstTrackRef.current.volume = clamp(gainsRef.current.tracks[0], 0, 1) * masterVolume;
+    if (secondTrackRef.current) secondTrackRef.current.volume = clamp(gainsRef.current.tracks[1], 0, 1) * masterVolume;
   }, [musicVolume]);
 
   useEffect(() => {
@@ -38,13 +39,14 @@ export default function AmbientAudio() {
 
     const gameTracks = [tracks[0], tracks[1]] as const;
     const setGain = (slot: 'intro' | 0 | 1, value: number) => {
-      const masterVolume = volumeRef.current / 100;
+      const gain = Number.isFinite(value) ? clamp(value, 0, 1) : 0;
+      const masterVolume = clamp(volumeRef.current, 0, 100) / 100;
       if (slot === 'intro') {
-        gainsRef.current.intro = value;
-        intro.volume = value * masterVolume;
+        gainsRef.current.intro = gain;
+        intro.volume = gain * masterVolume;
       } else {
-        gainsRef.current.tracks[slot] = value;
-        gameTracks[slot].volume = value * masterVolume;
+        gainsRef.current.tracks[slot] = gain;
+        gameTracks[slot].volume = gain * masterVolume;
       }
     };
     const play = (audio: HTMLAudioElement) => {
@@ -81,7 +83,7 @@ export default function AmbientAudio() {
       const start = performance.now();
       const animate = (now: number) => {
         if (stopped) return;
-        const progress = Math.min((now - start) / duration, 1);
+        const progress = clamp((now - start) / duration, 0, 1);
         changes.forEach(({ slot, from, to }) => setGain(slot, from + (to - from) * progress));
         if (progress < 1) {
           animationFrame = requestAnimationFrame(animate);
