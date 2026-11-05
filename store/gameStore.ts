@@ -53,8 +53,10 @@ interface GameState {
   shopOpen: boolean;
   shopTab: ShopTab;
   peopleOpen: boolean;
+  musicVolume: number;
 
   setPhase: (p: Phase) => void;
+  setMusicVolume: (volume: number) => void;
   newGame: () => void;
   loadGame: () => boolean;
   saveGame: () => 'disk' | 'memory';
@@ -121,8 +123,10 @@ export const useGameStore = create<GameState>((set, get) => ({
   shopOpen: false,
   shopTab: 'buildings',
   peopleOpen: false,
+  musicVolume: 70,
 
   setPhase: (phase) => set({ phase }),
+  setMusicVolume: (musicVolume) => set({ musicVolume }),
   newGame: () => set({ ...structuredClone(START), buffs: {}, travelers: [], phase: 'loading' }),
   hasSave: () => typeof window !== 'undefined' && readSave() !== null,
   saveGame: () => {

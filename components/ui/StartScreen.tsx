@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useCallback, useEffect, useState, type CSSProperties } from 'react';
 import { AnimatePresence, motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useGameStore } from '@/store/gameStore';
 
@@ -21,16 +21,17 @@ export default function StartScreen() {
   const newGame = useGameStore((s) => s.newGame);
   const loadGame = useGameStore((s) => s.loadGame);
   const setPhase = useGameStore((s) => s.setPhase);
+  const musicVolume = useGameStore((s) => s.musicVolume);
+  const setMusicVolume = useGameStore((s) => s.setMusicVolume);
 
   const [panel, setPanel] = useState<Panel>(null);
   const [hasSave, setHasSave] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
-  const [musicVolume, setMusicVolume] = useState(70);
-  const ambientAudioRef = useRef<HTMLAudioElement>(null);
   const diving = phase === 'loading';
 
   const startAmbientAudio = useCallback(() => {
-    const audio = ambientAudioRef.current;
+    const audio = document.getElementById('ambient-audio');
+    if (!(audio instanceof HTMLAudioElement)) return;
     if (!audio || !audio.paused || audio.volume === 0) return;
 
     void audio.play().catch((error: unknown) => {
@@ -44,14 +45,6 @@ export default function StartScreen() {
 
   const changeMusicVolume = (value: number) => {
     setMusicVolume(value);
-    const audio = ambientAudioRef.current;
-    if (!audio) return;
-    audio.volume = value / 100;
-    if (value === 0) {
-      audio.pause();
-    } else {
-      startAmbientAudio();
-    }
   };
 
   // Parallax suavizado pelo mouse
@@ -81,15 +74,6 @@ export default function StartScreen() {
   }, []);
 
   useEffect(() => {
-    const audio = ambientAudioRef.current;
-    if (!audio) return;
-    audio.volume = musicVolume / 100;
-    if (musicVolume > 0) startAmbientAudio();
-  }, [musicVolume, startAmbientAudio]);
-
-  useEffect(() => () => ambientAudioRef.current?.pause(), []);
-
-  useEffect(() => {
     if (!diving) return;
     const t = setTimeout(() => setPhase('playing'), 2300);
     return () => clearTimeout(t);
@@ -113,7 +97,6 @@ export default function StartScreen() {
         my.set(e.clientY / window.innerHeight - 0.5);
       }}
     >
-      <audio ref={ambientAudioRef} src="/musica_capa.mpeg" loop preload="auto" />
       {/* Tudo que dá zoom no mergulho */}
       <motion.div
         className="absolute inset-0"
