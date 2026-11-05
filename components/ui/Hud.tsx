@@ -18,9 +18,11 @@ export default function Hud() {
   const openTraveler = useGameStore((s) => s.openTraveler);
   const saveGame = useGameStore((s) => s.saveGame);
   const setPhase = useGameStore((s) => s.setPhase);
+  const musicVolume = useGameStore((s) => s.musicVolume);
+  const setMusicVolume = useGameStore((s) => s.setMusicVolume);
   const seconds = useRef(0);
   const [toast, setToast] = useState('');
-  const [confirmExit, setConfirmExit] = useState(false);
+  const [optionsOpen, setOptionsOpen] = useState(false);
   const toastTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const showToast = (msg: string) => {
@@ -40,7 +42,6 @@ export default function Hud() {
     openShop(false);
     openPeople(false);
     openTraveler(null);
-    setConfirmExit(false);
     setPhase('menu');
   };
 
@@ -84,10 +85,10 @@ export default function Hud() {
         <button className="kv-btn kv-btn-sm" onClick={() => save(false)}>Salvar</button>
         <button className="kv-btn kv-btn-sm" onClick={() => openPeople(true)}>Povo</button>
         <button className="kv-btn kv-btn-sm" onClick={() => openShop(true)}>Loja Real</button>
-        <button className="kv-btn kv-btn-sm" onClick={() => setConfirmExit(true)}>Voltar ao início</button>
+        <button className="kv-btn kv-btn-sm" onClick={() => setOptionsOpen(true)}>Opções</button>
       </div>
       <AnimatePresence>
-        {confirmExit && (
+        {optionsOpen && (
           <motion.div
             className="absolute inset-0 z-30 flex items-center justify-center bg-black/55 p-4"
             initial={{ opacity: 0 }}
@@ -101,15 +102,30 @@ export default function Hud() {
               exit={{ scale: 0.9, opacity: 0 }}
               role="dialog"
               aria-modal="true"
-              aria-labelledby="exit-confirmation-title"
+              aria-labelledby="options-title"
             >
-              <h2 id="exit-confirmation-title" className="text-center text-xl font-bold sm:text-2xl">
-                Tem certeza de que deseja voltar ao início?
-              </h2>
+              <h2 id="options-title" className="mb-4 text-center text-xl font-bold sm:text-2xl">Opções</h2>
+              <label className="mb-3 block text-sm font-semibold opacity-60">
+                Efeitos sonoros
+                <input type="range" min="0" max="100" value="70" disabled className="mt-1 w-full accent-amber-700" />
+              </label>
+              <p className="text-xs opacity-70">Arraste para a esquerda para diminuir ou silenciar a música.</p>
+              <label className="mt-3 block text-sm font-semibold">
+                Música <span className="float-right">{musicVolume}%</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={musicVolume}
+                  aria-label="Volume da música"
+                  onChange={(event) => setMusicVolume(Number(event.currentTarget.value))}
+                  className="mt-1 w-full accent-amber-700"
+                />
+              </label>
               <div className="mt-5 flex flex-wrap justify-center gap-2">
-                <button className="kv-btn kv-btn-sm" onClick={() => exitToMenu(true)}>Salvar e sair</button>
-                <button className="kv-btn kv-btn-sm" onClick={() => exitToMenu(false)}>Sair sem salvar</button>
-                <button className="kv-btn kv-btn-sm" onClick={() => setConfirmExit(false)}>Continuar</button>
+                <button className="kv-btn kv-btn-sm" onClick={() => exitToMenu(false)}>Voltar ao início sem salvar</button>
+                <button className="kv-btn kv-btn-sm" onClick={() => exitToMenu(true)}>Voltar e salvar</button>
+                <button className="kv-btn kv-btn-sm" onClick={() => setOptionsOpen(false)}>Continuar</button>
               </div>
             </motion.section>
           </motion.div>

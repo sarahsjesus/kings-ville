@@ -32,7 +32,7 @@ export default function StartScreen() {
   const startAmbientAudio = useCallback(() => {
     const audio = document.getElementById('ambient-audio');
     if (!(audio instanceof HTMLAudioElement)) return;
-    if (!audio || !audio.paused || audio.volume === 0) return;
+    if (!audio.paused || audio.volume === 0) return;
 
     void audio.play().catch((error: unknown) => {
       if (error instanceof DOMException) {
