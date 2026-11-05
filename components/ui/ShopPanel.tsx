@@ -15,11 +15,11 @@ export default function ShopPanel() {
       {s.shopOpen && (
         <motion.div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 p-3"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => s.openShop(false)}>
-          <motion.section className="kv-panel flex max-h-[85vh] w-[min(96vw,640px)] flex-col p-4"
+          <motion.section className="kv-panel flex max-h-[calc(100dvh-1.5rem)] w-[min(96vw,640px)] flex-col p-3 sm:p-4"
             initial={{ y: 30, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit={{ y: 30, opacity: 0 }}
             onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Loja Real">
             <h2 className="mb-3 text-center text-2xl font-bold">Loja Real</h2>
-            <div className="mb-3 flex justify-center gap-2" role="tablist">
+            <div className="mb-3 flex flex-wrap justify-center gap-2" role="tablist">
               {SHOP_TABS.map((t) => (
                 <button key={t.id} role="tab" aria-selected={s.shopTab === t.id}
                   className={`kv-btn kv-btn-sm ${s.shopTab === t.id ? 'brightness-110 ring-2 ring-amber-700' : 'opacity-80'}`}

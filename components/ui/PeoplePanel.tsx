@@ -28,13 +28,24 @@ export default function PeoplePanel() {
       {s.peopleOpen && (
         <motion.div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 p-3"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => s.openPeople(false)}>
-          <motion.section className="kv-panel flex max-h-[88vh] w-[min(96vw,560px)] flex-col overflow-y-auto p-4"
+          <motion.section className="kv-panel flex max-h-[calc(100dvh-1.5rem)] w-[min(96vw,560px)] flex-col overflow-y-auto overscroll-contain p-3 sm:p-4"
             initial={{ y: 30, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit={{ y: 30, opacity: 0 }}
             onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Povo do reino">
             <h2 className="text-center text-2xl font-bold">Povo do Reino</h2>
             <p className="mb-3 text-center text-sm">
               Habitantes {s.population.total}/{s.population.capacity} · Sem função: <strong>{idle}</strong>
             </p>
+
+            <section className="mb-3 rounded-md border border-amber-900/40 bg-amber-100/30 p-3" aria-labelledby="village-summary-title">
+              <h3 id="village-summary-title" className="font-bold">{LEVEL_NAMES[s.kingdomLevel]}</h3>
+              <p className="mt-1 text-sm">
+                🌾 Fazendeiros {s.population.farmers} · ⛏️ Mineradores {s.population.miners}
+              </p>
+              <p className="text-sm">
+                🔨 Construtores {s.population.builders} · ⚔️ Guerreiros {s.population.warriors}
+              </p>
+              <p className="mt-1 text-sm">🛡️ Segurança {s.villageSecurity().toFixed(1).replace('.', ',')}</p>
+            </section>
 
             {s.travelers.length > 0 && (
               <section className="mb-3 rounded-md border border-amber-900/40 bg-amber-100/30 p-3" aria-labelledby="visitors-title">

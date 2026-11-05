@@ -8,6 +8,9 @@ const deco = Cinzel_Decorative({ subsets: ['latin'], variable: '--font-deco', we
 export const metadata: Metadata = {
   title: "King's Ville",
   description: 'Transforme uma vila rústica em uma capital medieval.',
+  icons: {
+    icon: "./public/icon.jpg", 
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

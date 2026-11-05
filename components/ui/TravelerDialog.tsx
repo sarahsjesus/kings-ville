@@ -30,7 +30,7 @@ export default function TravelerDialog() {
       {t && (
         <motion.div className="absolute inset-0 z-20 flex items-end justify-center bg-black/40 p-3 sm:items-center"
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={close}>
-          <motion.section className="kv-panel w-[min(96vw,520px)] p-5" role="dialog" aria-label={`Viajante: ${t.name}`}
+          <motion.section className="kv-panel max-h-[calc(100dvh-1.5rem)] w-[min(96vw,520px)] overflow-y-auto overscroll-contain p-4 sm:p-5" role="dialog" aria-label={`Viajante: ${t.name}`}
             initial={{ y: 40, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit={{ y: 40, opacity: 0 }}
             onClick={(e) => e.stopPropagation()}>
             <h2 className="text-xl font-bold">{t.name}</h2>
@@ -47,7 +47,7 @@ export default function TravelerDialog() {
               ))}
             </div>
             {(full || msg) && <p className="mt-3 text-center text-sm font-bold text-red-900">{msg || 'Sem moradia livre. Compre casas na Loja Real.'}</p>}
-            <div className="mt-4 flex justify-center gap-3">
+            <div className="mt-4 flex flex-wrap justify-center gap-3">
               <button className="kv-btn kv-btn-sm" onClick={() => { dismiss(t.id); setMsg(''); }}>Dispensar</button>
               <button className="kv-btn kv-btn-sm" onClick={close}>Pensar melhor</button>
             </div>

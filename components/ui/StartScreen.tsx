@@ -107,7 +107,10 @@ export default function StartScreen() {
         {/* Camada 1: arte (fundo) */}
         <motion.div className="absolute inset-0" style={{ x: artX, y: artY, scale: 1.07 }}>
           <div className="kv-art">
-            <img src="/images/capa.jpg" alt="King’s Ville" draggable={false} />
+            <picture>
+              <source media="(max-width: 640px)" srcSet="/images/capa_jogo_kingsville_responsiva.jpg" />
+              <img src="/images/capa.jpg" alt="King’s Ville" draggable={false} />
+            </picture>
             <div className="kv-logoshine" />
             {SMOKE.map((p, i) =>
               [0, 1, 2].map((j) => (
